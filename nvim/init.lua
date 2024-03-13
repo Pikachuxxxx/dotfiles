@@ -14,12 +14,14 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 plugins = {
+	{ "junegunn/fzf", dir = "~/.fzf", build = "./install --all" },
 	{
 		'nvim-telescope/telescope.nvim', tag = '0.1.5',
 		-- or                              , branch = '0.1.x',
 		dependencies = { 'nvim-lua/plenary.nvim' ,
 		'BurntSushi/ripgrep',
-		'sharkdp/fd'
+		'sharkdp/fd',
+		'princejoogie/dir-telescope.nvim'
 
 	}
 },
@@ -70,17 +72,41 @@ plugins = {
 }
 }
 -- CONFIG
+-- tags
+-- no clown fiesta
+require("no-clown-fiesta").setup({
+	transparent = true, -- Enable this to disable the bg color
+	styles = {
+		-- You can set any of the style values specified for `:h nvim_set_hl`
+		comments = {},
+		keywords = {},
+		functions = {},
+		variables = {},
+		type = { bold = true },
+		lsp = { underline = true }
+	},
+})
 -- lazy
 require("lazy").setup(plugins,opts)
 
 -- telescope
+function ffglobal ()
+	return require('telescope.builtin').find_files({search_dirs={"~/"}})
+end
+function dirffglobal ()
+	return require("telescope").extensions.dir.find_files({search_dirs={"~/"}})
+end
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>ff', ffglobal, {})
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>ps', function()
 	builtin.grep_string({search = vim.fn.input("Grep > ")})
 end)
+---- extensions
+require("telescope").load_extension("dir")
+vim.keymap.set('n', '<leader>pd', dirffglobal, {noremap =true, silent = true})
+vim.keymap.set("n", "<leader>pg", "<cmd>Telescope dir find_files<CR>", { noremap = true, silent = true })
 -- lsp-zero
 local lsp = require('lsp-zero').preset({})
 
@@ -99,7 +125,7 @@ vim.opt.relativenumber = true;
 vim.opt.tabstop = 4;
 vim.opt.shiftwidth = 4;
 vim.opt.softtabstop = 4;
-vim.opt.autochdir = true;
+vim.opt.autochdir = false;
 vim.opt.smartindent = true;
 vim.opt.wrap = false;
 vim.opt.hlsearch = false;
@@ -121,8 +147,4 @@ local set_keymap = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 vim.keymap.set("n","\\",":vsplit<CR>",opts);
 vim.keymap.set("n","-",":split<CR>",opts);
--- Map '\' for vertical split
---set_keymap('n', '\\', ':vsplit<CR>', opts)
-
--- Map '-' for horizontal split
---set_keymap('n', '-', ':split<CR>', opts)
+vim.o.tags = './tags'
