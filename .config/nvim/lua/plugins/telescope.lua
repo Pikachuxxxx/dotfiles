@@ -58,7 +58,7 @@ vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { noremap = true, si
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { noremap = true, silent = true, desc = "LSP: Previous diagnostic" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { noremap = true, silent = true, desc = "LSP: Next diagnostic" })
 
-vim.keymap.set("n", "<leader>f", function()
+vim.keymap.set("n", "<leader>kd", function()
   vim.lsp.buf.format { async = true }
 end, { noremap = true, silent = true, desc = "LSP: Format file" })
 
