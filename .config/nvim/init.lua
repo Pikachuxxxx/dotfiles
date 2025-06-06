@@ -46,6 +46,10 @@ vim.opt.smartcase       = true                          -- Override ignorecase i
 -- System clipboard integration (y+, p+, etc.)
 vim.opt.clipboard       = "unnamedplus"
 
+-- Methods/Backets Folding 
+vim.opt.foldmethod      = 'expr'
+vim.opt.foldexpr        = 'v:lua.vim.treesitter.foldexpr()'
+vim.opt.foldlevel       = 20 
 -- Optional: Shortcuts for easier system clipboard usage (not strictly needed if using y+ and p+)
 -- These keymaps make y and p also default to system clipboard
 vim.keymap.set("n", "<C-y>", '"+y', { noremap = true, silent = true })
@@ -69,8 +73,6 @@ vim.keymap.set("n", "<leader>sx", "<cmd>close<CR>")
 -- Close all other windows except current: :only
 
 -- Tab management
--- Tab management keymaps in Lua
-
 -- Open a new tab
 vim.keymap.set('n', '<leader>to', ':tabnew<CR>', { desc = 'Open a new tab' })
 vim.keymap.set('n', '<leader>tx', ':tabclose<CR>', { desc = 'Close current tab' })
@@ -78,6 +80,15 @@ vim.keymap.set('n', '<leader>tp', ':tabprevious<CR>', { desc = 'Go to previous t
 vim.keymap.set('n', '<leader>tn', ':tabnext<CR>', { desc = 'Go to next tab' })
 vim.keymap.set('n', '<leader>ts', ':tabfirst<CR>', { desc = 'Go to first tab' })
 vim.keymap.set('n', '<leader>tf', ':tabnew %<CR>', { desc = 'Open current file in new tab' })
+
+-- Folding shortcuts
+--vim.keymap.set('n', '<leader>z', 'za', { desc = 'Toggle fold under cursor' })
+--vim.keymap.set('n', '<leader>za', 'zR', { desc = 'Open all folds' })
+--vim.keymap.set('n', '<leader>zc', 'zM', { desc = 'Close all folds' })
+--vim.keymap.set('n', '<leader>zo', 'zo', { desc = 'Open fold at cursor' })
+--vim.keymap.set('n', '<leader>zc', 'zc', { desc = 'Close fold at cursor' })
+vim.keymap.set('n', '<leader>fm', ':set foldmethod=marker<CR>', { desc = 'Use marker-based folding' })
+vim.keymap.set('n', '<leader>ft', ':set foldmethod=expr | set foldexpr=nvim_treesitter#foldexpr()<CR>', { desc = 'Use Treesitter-based folding' })
 
 --  Remove octal number support
 vim.opt.nrformats:remove("octal")
