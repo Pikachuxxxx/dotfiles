@@ -30,7 +30,7 @@ return {
             overrides = {},         -- If you want to override specific highlight groups, put them here
 
             dim_inactive = false,   -- Don’t dim inactive windows (so all windows have full brightness)
-            transparent_mode = false, -- Don’t enable transparent background (set to true if you want to see the terminal’s background)
+            transparent_mode = true, -- Don’t enable transparent background (set to true if you want to see the terminal’s background)
         })
     end
 }

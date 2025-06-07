@@ -1,10 +1,13 @@
 require("config.lazy")
 
+-- global settings
+
+
 -- Theme
 vim.o.background = "dark" -- or "light" for light mode
---vim.cmd("colorscheme kanagawa")
+--vim.cmd("colorscheme kanagawa-wave")
 vim.cmd("colorscheme gruvbox")
-
+--vim.cmd("colorscheme cyberdream")
 -- settings options 
 -- Use true color support for better highlighting
 vim.opt.termguicolors = true
@@ -52,6 +55,10 @@ vim.opt.clipboard       = "unnamedplus"
 vim.opt.foldmethod      = 'expr'
 vim.opt.foldexpr        = 'v:lua.vim.treesitter.foldexpr()'
 vim.opt.foldlevel       = 20 
+
+-- Tree view for file explorer
+vim.keymap.set("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>")
+vim.keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>")
 -- Optional: Shortcuts for easier system clipboard usage (not strictly needed if using y+ and p+)
 -- These keymaps make y and p also default to system clipboard
 vim.keymap.set("n", "<C-y>", '"+y', { noremap = true, silent = true })
@@ -89,8 +96,8 @@ vim.keymap.set('n', '<leader>tf', ':tabnew %<CR>', { desc = 'Open current file i
 --vim.keymap.set('n', '<leader>zc', 'zM', { desc = 'Close all folds' })
 --vim.keymap.set('n', '<leader>zo', 'zo', { desc = 'Open fold at cursor' })
 --vim.keymap.set('n', '<leader>zc', 'zc', { desc = 'Close fold at cursor' })
-vim.keymap.set('n', '<leader>fm', ':set foldmethod=marker<CR>', { desc = 'Use marker-based folding' })
-vim.keymap.set('n', '<leader>ft', ':set foldmethod=expr | set foldexpr=nvim_treesitter#foldexpr()<CR>', { desc = 'Use Treesitter-based folding' })
+-- vim.keymap.set('n', '<leader>fm', ':set foldmethod=marker<CR>', { desc = 'Use marker-based folding' })
+-- vim.keymap.set('n', '<leader>ft', ':set foldmethod=expr | set foldexpr=nvim_treesitter#foldexpr()<CR>', { desc = 'Use Treesitter-based folding' })
 
 -- LSP/telescope keymapings
 -- LSP navigation
@@ -109,13 +116,22 @@ vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { noremap = true, silent = t
 
 -- Toggle term mappings
 local opts = { noremap = true, silent = true }
-vim.keymap.set("n", "<Leader>th", ":ToggleTerm direction=horizontal<CR>", opts)
-vim.keymap.set("n", "<Leader>tv", ":ToggleTerm direction=vertical size=25<CR>", opts)
-vim.keymap.set("n", "<Leader>tf", ":ToggleTerm direction=float<CR>", opts)
+vim.keymap.set("n", "<Leader>tth", ":ToggleTerm direction=horizontal<CR>", opts)
+vim.keymap.set("n", "<Leader>ttv", ":ToggleTerm direction=vertical size=25<CR>", opts)
+vim.keymap.set("n", "<Leader>ttf", ":ToggleTerm direction=float<CR>", opts)
 vim.keymap.set("n", "<Leader>tt", ":TermNew <CR>", opts)
 vim.keymap.set("n", "<Leader>tts", ":TermSelect <CR>", opts)
 
---  Remove octal number support
+-- bufferline
+vim.keymap.set("n", "<Tab>", ":BufferLineCycleNext<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<S-Tab>", ":BufferLineCyclePrev<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>bp", "<Cmd>BufferLinePick<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>bd", ":bdelete!<CR>", { noremap = true, silent = true })
+
+-- TODO telescope 
+vim.keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", {desc = "List all the TODOs in the project"})
+
+-- Remove octal number support
 vim.opt.nrformats:remove("octal")
 
 -- Other Keymappings
@@ -130,3 +146,23 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     vim.lsp.buf.format({ async = false })
   end,
 })
+
+vim.api.nvim_create_user_command('ToggleHeaderSource', function()
+    local filepath = vim.api.nvim_buf_get_name(0)
+    local alt_ext = filepath:match('%.c$') and '.h'
+        or filepath:match('%.h$') and '.c'
+        or filepath:match('%.cpp$') and '.h'
+        or nil
+
+    if alt_ext then
+        local alt_file = filepath:gsub('%.[ch]+$', alt_ext)
+        if vim.fn.filereadable(alt_file) == 1 then
+            vim.cmd('edit ' .. alt_file)
+        else
+            print('Alternate file not found: ' .. alt_file)
+        end
+    else
+        print('Not a recognized C/C++ file.')
+    end
+end, {})
+vim.keymap.set('n', '<S-i>', '<Esc>:ToggleHeaderSource<CR>', { noremap = true, silent = true })
