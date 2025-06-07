@@ -103,14 +103,17 @@ vim.keymap.set("n", "K", vim.lsp.buf.hover, { noremap = true, silent = true, des
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { noremap = true, silent = true, desc = "LSP: Rename symbol" })
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, silent = true, desc = "LSP: Code action" })
 -- LSP diagnostics
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { noremap = true, silent = true, desc = "LSP: Show diagnostics" })
+vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { noremap = true, silent = true, desc = "LSP: Show diagnostics" })
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { noremap = true, silent = true, desc = "LSP: Previous diagnostic" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { noremap = true, silent = true, desc = "LSP: Next diagnostic" })
--- Format
-vim.keymap.set("n", "<leader>kd", function()
-    vim.lsp.buf.format { async = true }
-end, { noremap = true, silent = true, desc = "LSP: Format file" })
 
+-- Toggle term mappings
+local opts = { noremap = true, silent = true }
+vim.keymap.set("n", "<Leader>th", ":ToggleTerm direction=horizontal<CR>", opts)
+vim.keymap.set("n", "<Leader>tv", ":ToggleTerm direction=vertical size=25<CR>", opts)
+vim.keymap.set("n", "<Leader>tf", ":ToggleTerm direction=float<CR>", opts)
+vim.keymap.set("n", "<Leader>tt", ":TermNew <CR>", opts)
+vim.keymap.set("n", "<Leader>tts", ":TermSelect <CR>", opts)
 
 --  Remove octal number support
 vim.opt.nrformats:remove("octal")
