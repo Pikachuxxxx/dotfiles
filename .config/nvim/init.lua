@@ -1,7 +1,9 @@
 require("config.lazy")
 
 -- Theme
-vim.cmd("colorscheme kanagawa")
+vim.o.background = "dark" -- or "light" for light mode
+--vim.cmd("colorscheme kanagawa")
+vim.cmd("colorscheme gruvbox")
 
 -- settings options 
 -- Use true color support for better highlighting
@@ -56,7 +58,7 @@ vim.keymap.set("n", "<C-y>", '"+y', { noremap = true, silent = true })
 vim.keymap.set("v", "<C-y>", '"+y', { noremap = true, silent = true })
 vim.keymap.set("n", "<C-p>", '"+p', { noremap = true, silent = true })
 vim.keymap.set("v", "<C-p>", '"+p', { noremap = true, silent = true })
-vim.keymap.set("i", "jk", "<ESC>", {desc = "Exit insert mode with jk"})
+vim.keymap.set("i", "jk", "<ESC>", {noremap = true, desc = "Exit insert mode with jk"})
 
 -- Window Management
 vim.keymap.set("n", "<leader>sv", "<C-w>v")
@@ -90,10 +92,30 @@ vim.keymap.set('n', '<leader>tf', ':tabnew %<CR>', { desc = 'Open current file i
 vim.keymap.set('n', '<leader>fm', ':set foldmethod=marker<CR>', { desc = 'Use marker-based folding' })
 vim.keymap.set('n', '<leader>ft', ':set foldmethod=expr | set foldexpr=nvim_treesitter#foldexpr()<CR>', { desc = 'Use Treesitter-based folding' })
 
+-- LSP/telescope keymapings
+-- LSP navigation
+vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<cr>", { noremap = true, silent = true, desc = "LSP: Go to definition" })
+vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>", { noremap = true, silent = true, desc = "LSP: Find references" })
+vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<cr>", { noremap = true, silent = true, desc = "LSP: Go to implementation" })
+vim.keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<cr>", { noremap = true, silent = true, desc = "LSP: Type definition" })
+-- LSP actions
+vim.keymap.set("n", "K", vim.lsp.buf.hover, { noremap = true, silent = true, desc = "LSP: Hover documentation" })
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { noremap = true, silent = true, desc = "LSP: Rename symbol" })
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, silent = true, desc = "LSP: Code action" })
+-- LSP diagnostics
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { noremap = true, silent = true, desc = "LSP: Show diagnostics" })
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { noremap = true, silent = true, desc = "LSP: Previous diagnostic" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { noremap = true, silent = true, desc = "LSP: Next diagnostic" })
+-- Format
+vim.keymap.set("n", "<leader>kd", function()
+    vim.lsp.buf.format { async = true }
+end, { noremap = true, silent = true, desc = "LSP: Format file" })
+
+
 --  Remove octal number support
 vim.opt.nrformats:remove("octal")
 
--- Keymappings
+-- Other Keymappings
 vim.keymap.set('i', '<C-s>', '<Esc>:w<CR>')
 vim.keymap.set('n', '<C-s>', '<Esc>:w<CR>')
 vim.keymap.set('i', 'QQ', '<Esc>:q<CR>')

@@ -122,8 +122,6 @@ export DYLD_LIBRARY_PATH
 VK_LAYER_PATH="$VULKAN_SDK/share/vulkan/explicit_layer.d"
 export VK_LAYER_PATH
 VK_ICD_FILENAMES="$VULKAN_SDK/share/vulkan/icd.d/MoltenVK_icd.json"
-export VK_ICD_FILENAMES
-VK_DRIVER_FILES="$VULKAN_SDK/share/vulkan/icd.d/MoltenVK_icd.json"
 export VK_DRIVER_FILES
 export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"
 QTDIR="/opt/homebrew/opt/qt@5/"
@@ -141,4 +139,3 @@ alias ls='ls --color=auto'
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 alias ls='ls -G'
 export TERM="xterm-256color"
-export COLORTERM="truecolor"

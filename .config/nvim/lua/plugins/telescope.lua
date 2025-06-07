@@ -1,72 +1,81 @@
 return {
-  {
-	'nvim-telescope/telescope.nvim',
-	dependencies = {
-	  'nvim-lua/plenary.nvim',
-	  'https://github.com/princejoogie/dir-telescope.nvim'
-	},
-	config = function ()
-	  require('telescope').setup {
-		defaults = {
-		  path_display = {'filename_first', shorten = 5},
-		},
-		pickers = {
-		  git_files = {
-			theme = "dropdown",
-			previewer = false
-		  },
-		  find_files = {
-			theme = "dropdown",
-			previewer = false
-		  },
-		  live_grep = {
-			theme = 'ivy'
-		  },
-		  lsp_references = {
-			theme = 'cursor',
-		  },
-		  quickfix = {
-			theme = 'ivy'
-		  }
-		},
-	  }
-	  local builtin = require('telescope.builtin')
-	  -- -- file search
-	  local function is_git_project()
-		local handle = io.popen("git rev-parse --is-inside-work-tree 2>/dev/null")
-		local result = handle:read("*a")
-		handle:close()
-		return result:match("true") ~= nil
-	  end
-	  if is_git_project() then
-		vim.keymap.set('n', '<leader>f', builtin.git_files)
-	  else
-		vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Telescope find files' })
-	  end
-	  -- find references
--- LSP-related keymaps using vim.keymap.set directly
-vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<cr>", { noremap = true, silent = true, desc = "LSP: Go to definition" })
-vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>", { noremap = true, silent = true, desc = "LSP: Find references" })
-vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<cr>", { noremap = true, silent = true, desc = "LSP: Go to implementation" })
-vim.keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<cr>", { noremap = true, silent = true, desc = "LSP: Type definition" })
+    {
+        -- Telescope core plugin
+        'nvim-telescope/telescope.nvim',
+        dependencies = {
+            'nvim-lua/plenary.nvim',                           -- Required dependency
+            'https://github.com/princejoogie/dir-telescope.nvim', -- Additional plugin
+        },
+        config = function()
+            require('telescope').setup {
+                defaults = {
+                    -- Display paths as: filename first, then shortened
+                    path_display = { 'filename_first', shorten = 5 },
+                },
+                pickers = {
+                    -- Git files picker
+                    git_files = {
+                        theme = "dropdown",
+                        previewer = false,
+                    },
+                    -- Normal file finder
+                    find_files = {
+                        theme = "dropdown",
+                        previewer = false,
+                    },
+                    -- Live grep picker (like "grep -r")
+                    live_grep = {
+                        theme = 'ivy',
+                    },
+                    -- LSP references picker with bigger vertical layout
+                    lsp_references = {
+                        layout_strategy = 'horizontal',
+                        layout_config = {
+                            width = 0.75,
+                            preview_width = 0.5,
+                        },
+                    },
+                    -- Quickfix picker
+                    quickfix = {
+                        theme = 'ivy',
+                    },
+                },
+            }
 
-vim.keymap.set("n", "K", vim.lsp.buf.hover, { noremap = true, silent = true, desc = "LSP: Hover documentation" })
-vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { noremap = true, silent = true, desc = "LSP: Rename symbol" })
-vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, silent = true, desc = "LSP: Code action" })
+            local builtin = require('telescope.builtin')
 
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { noremap = true, silent = true, desc = "LSP: Show diagnostics" })
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { noremap = true, silent = true, desc = "LSP: Previous diagnostic" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { noremap = true, silent = true, desc = "LSP: Next diagnostic" })
+            -- Check if current directory is inside a git repository
+            local function is_git_project()
+                local handle = io.popen("git rev-parse --is-inside-work-tree 2>/dev/null")
+                local result = handle:read("*a")
+                handle:close()
+                return result:match("true") ~= nil
+            end
 
-vim.keymap.set("n", "<leader>kd", function()
-  vim.lsp.buf.format { async = true }
-end, { noremap = true, silent = true, desc = "LSP: Format file" })
+            -- Map `<leader>f` to either git_files or find_files depending on project type
+            if is_git_project() then
+                vim.keymap.set('n', '<leader>f', builtin.git_files)
+            else
+                vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Telescope find files' })
+            end
 
-	  -- quick fix
-	  vim.keymap.set('n', '<leader>q', builtin.quickfix , { desc = 'Telescope quickfix' })
+            vim.keymap.set('n', '<leader>q', builtin.quickfix, { desc = 'Telescope quickfix' })
+            vim.keymap.set('n', '<leader>g', builtin.live_grep, { desc = 'Telescope live grep' })
 
-	  -- grep
-	  vim.keymap.set('n', '<leader>g', builtin.live_grep)
-  end
-}
+            vim.keymap.set('n', '<leader>m', function()
+              builtin.lsp_document_symbols({
+                layout_strategy = 'horizontal',
+                layout_config = { width = 0.6, height = 0.6 },
+              })
+            end, { noremap = true, silent = true, desc = "Telescope: Functions in current file" })
+            
+            vim.keymap.set('n', '<leader>o', function()
+              builtin.lsp_workspace_symbols({
+                layout_strategy = 'horizontal',
+                layout_config = { width = 0.7, height = 0.7 },
+              })
+            end, { noremap = true, silent = true, desc = "Telescope: All functions in workspace" })
+            
+        end,
+    },
 }
