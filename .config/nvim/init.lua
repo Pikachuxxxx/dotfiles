@@ -5,8 +5,11 @@ require("config.lazy")
 
 -- Theme
 vim.o.background = "dark" -- or "light" for light mode
---vim.cmd("colorscheme kanagawa-wave")
-vim.cmd("colorscheme gruvbox")
+vim.cmd("colorscheme kanagawa-wave")
+vim.g.sonokai_enable_italic = true
+vim.cmd.colorscheme('sonokai')
+vim.g.sonokai_style = 'andromeda'
+--vim.cmd("colorscheme gruvbox")
 --vim.cmd("colorscheme cyberdream")
 -- settings options 
 -- Use true color support for better highlighting
@@ -149,20 +152,39 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 
 vim.api.nvim_create_user_command('ToggleHeaderSource', function()
     local filepath = vim.api.nvim_buf_get_name(0)
-    local alt_ext = filepath:match('%.c$') and '.h'
-        or filepath:match('%.h$') and '.c'
-        or filepath:match('%.cpp$') and '.h'
-        or nil
+    -- 1) figure out what the current extension is
+    local ext = filepath:match('(%.[^./]+)$')
+    local alt_ext
 
-    if alt_ext then
-        local alt_file = filepath:gsub('%.[ch]+$', alt_ext)
-        if vim.fn.filereadable(alt_file) == 1 then
-            vim.cmd('edit ' .. alt_file)
-        else
-            print('Alternate file not found: ' .. alt_file)
+    -- 2) decide what the alternate extension should be
+    if ext == '.c' then
+        alt_ext = '.h'
+    elseif ext == '.cpp' then
+        alt_ext = '.h'
+    elseif ext == '.h' then
+        -- if header, prefer .cpp over .c when both exist
+        local base = filepath:sub(1, #filepath - #ext)
+        if vim.fn.filereadable(base .. '.cpp') == 1 then
+            alt_ext = '.cpp'
+        elseif vim.fn.filereadable(base .. '.c') == 1 then
+            alt_ext = '.c'
         end
+    end
+
+    if not alt_ext then
+        return print('Not a recognized C/C++ file or no alternate found.')
+    end
+
+    -- 3) build the alternate filename by stripping ext and adding alt_ext
+    local base = filepath:sub(1, #filepath - #ext)
+    local alt_file = base .. alt_ext
+
+    if vim.fn.filereadable(alt_file) == 1 then
+        vim.cmd('edit ' .. alt_file)
     else
-        print('Not a recognized C/C++ file.')
+        print('Alternate file not found: ' .. alt_file)
     end
 end, {})
+
+vim.keymap.set('n', '<S-i>', '<Esc>:ToggleHeaderSource<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<S-i>', '<Esc>:ToggleHeaderSource<CR>', { noremap = true, silent = true })
