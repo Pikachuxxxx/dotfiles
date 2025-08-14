@@ -24,7 +24,7 @@ return {
                     layout_strategy = 'horizontal',
                     layout_config = {
                         width = 0.75,
-                        preview_width = 0.5,
+                        preview_width = 0.6,
                     },
                 },
                 -- Quickfix picker
@@ -33,8 +33,9 @@ return {
                 },
             },
         }
-
-        require('telescope').load_extension("fzf")
+	if vim.fn.has('win32') == 0 then
+        		require('telescope').load_extension("fzf")
+	end
 
         local builtin = require('telescope.builtin')
 
@@ -67,7 +68,7 @@ return {
         vim.keymap.set('n', '<leader>o', function()
             builtin.lsp_workspace_symbols({
                 layout_strategy = 'horizontal',
-                layout_config = { width = 0.7, height = 0.7 },
+                layout_config = { width = 0.6, height = 0.6 },
             })
         end, { noremap = true, silent = true, desc = "Telescope: All functions in workspace" })
         
